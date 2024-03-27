@@ -66,3 +66,23 @@ USER() {
   done
   GUESS_NUMBER
 }
+
+GAME_INFO() {
+  BEST_GAME=$($PSQL "SELECT best_game FROM games INNER JOIN users USING(user_id) WHERE user_id=$USER_ID;")
+  if [[ -z $BEST_GAME ]]; then
+    INSERT_BEST_GAME=$($PSQL "INSERT INTO games(user_id, best_game) VALUES($USER_ID, $TOTAL_GUESS);")
+  else
+    if [[ $TOTAL_GUESS -lt $BEST_GAME ]]; then
+      INSERT_BEST_GAME=$($PSQL "UPDATE games SET best_game = $TOTAL_GUESS WHERE user_id = $USER_ID;")
+    fi
+  fi
+
+  GAMES_PLAYED=$($PSQL "SELECT games_played FROM users WHERE user_id=$USER_ID;")
+  if [[ -z $GAMES_PLAYED ]]; then
+    INSERT_GAMES_PLAYED=$($PSQL "INSERT INTO users(games_played) VALUES($TOTAL_GAMES)")
+  else
+    INSERT_GAMES_PLAYED=$($PSQL "UPDATE users SET games_played = $TOTAL_GAMES + 1 WHERE user_id=$USER_ID;")
+  fi
+}
+
+GAME_START
