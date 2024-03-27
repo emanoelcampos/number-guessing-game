@@ -50,3 +50,19 @@ GUESS_NUMBER() {
     fi
   fi
 }
+
+NEW_USER() {
+  INSERT_NEW_USER_RESULT=$($PSQL "INSERT INTO users(username) VALUES('$USERNAME');")
+  USER_ID=$($PSQL "SELECT user_id FROM users WHERE username = '$USERNAME';")
+
+  echo "Welcome, $USERNAME! It looks like this is your first time here."
+  GUESS_NUMBER
+}
+
+USER() {
+  USER_INFO=$($PSQL "SELECT username, games_played, best_game FROM users INNER JOIN games USING(user_id) WHERE user_id = $USER_ID;")
+  echo "$USER_INFO" | while IFS=" |" read USERNAME GAMES_PLAYED BEST_GAME; do
+    echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
+  done
+  GUESS_NUMBER
+}
