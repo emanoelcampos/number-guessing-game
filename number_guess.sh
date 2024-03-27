@@ -25,7 +25,7 @@ GUESS_NUMBER() {
   else
     TOTAL_GUESS=1
 
-    SECRET_NUMBER=$((RANDOM % 5))
+    SECRET_NUMBER=$((RANDOM % 1000 + 1))
 
     while [[ $GUESS -ne $SECRET_NUMBER ]]; do
       GAME_FINISHED=1 # 1 = false
