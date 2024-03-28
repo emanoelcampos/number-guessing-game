@@ -44,7 +44,7 @@ GUESS_NUMBER() {
     NUMBER_GUESSED=0 # true
 
     if [[ $NUMBER_GUESSED = 0 ]]; then
-      GAME_COUNT=0 # GAME_COUNT=1
+      GAME_COUNT=1
       echo -e "\nYou guessed it in $GUESS_COUNT tries. The secret number was $GUESS. Nice job!\n"
       GAME_INFO
     fi
@@ -81,7 +81,7 @@ GAME_INFO() {
   if [[ -z $GAMES_PLAYED ]]; then
     INSERT_GAMES_PLAYED=$($PSQL "INSERT INTO users(games_played) VALUES($GAME_COUNT)")
   else
-    UPDATE_GAMES_PLAYED=$($PSQL "UPDATE users SET games_played = $GAME_COUNT + 1 WHERE user_id = $USER_ID;") # $GAMES_PLAYED
+    UPDATE_GAMES_PLAYED=$($PSQL "UPDATE users SET games_played = $GAMES_PLAYED + 1 WHERE user_id = $USER_ID;")
   fi
 }
 
