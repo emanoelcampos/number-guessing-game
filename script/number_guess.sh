@@ -23,36 +23,36 @@ GUESS_NUMBER() {
     GUESS_NUMBER
 
   else
-    TOTAL_GUESS=1
+    GUESS_COUNT=1
 
     SECRET_NUMBER=$((RANDOM % 1000 + 1))
 
     while [[ $GUESS -ne $SECRET_NUMBER ]]; do
-      GAME_FINISHED=1 # 1 = false
-      TOTAL_GAMES=0
+      NUMBER_GUESSED=1 # false
+      GAME_COUNT=0
       if [[ $GUESS -gt $SECRET_NUMBER ]]; then
         echo -e "It's lower than that, guess again:\n"
         read GUESS
-        TOTAL_GUESS=$((TOTAL_GUESS + 1))
+        GUESS_COUNT=$((GUESS_COUNT + 1))
 
       elif [[ $GUESS -lt $SECRET_NUMBER ]]; then
         echo -e "It's higher than that, guess again:\n"
         read GUESS
-        TOTAL_GUESS=$((TOTAL_GUESS + 1))
+        GUESS_COUNT=$((GUESS_COUNT + 1))
       fi
     done
-    GAME_FINISHED=0
+    NUMBER_GUESSED=0 # true
 
-    if [[ $GAME_FINISHED = 0 ]]; then # 0 = true
-      TOTAL_GAMES=0
-      echo -e "\nYou guessed it in $TOTAL_GUESS tries. The secret number was $GUESS. Nice job!\n"
+    if [[ $NUMBER_GUESSED = 0 ]]; then
+      GAME_COUNT=0 # GAME_COUNT=1
+      echo -e "\nYou guessed it in $GUESS_COUNT tries. The secret number was $GUESS. Nice job!\n"
       GAME_INFO
     fi
   fi
 }
 
 NEW_USER() {
-  INSERT_NEW_USER_RESULT=$($PSQL "INSERT INTO users(username) VALUES('$USERNAME');")
+  INSERT_NEW_USER=$($PSQL "INSERT INTO users(username) VALUES('$USERNAME');")
   USER_ID=$($PSQL "SELECT user_id FROM users WHERE username = '$USERNAME';")
 
   echo "Welcome, $USERNAME! It looks like this is your first time here."
@@ -68,20 +68,20 @@ USER() {
 }
 
 GAME_INFO() {
-  BEST_GAME=$($PSQL "SELECT best_game FROM games INNER JOIN users USING(user_id) WHERE user_id=$USER_ID;")
+  BEST_GAME=$($PSQL "SELECT best_game FROM games INNER JOIN users USING(user_id) WHERE user_id = $USER_ID;")
   if [[ -z $BEST_GAME ]]; then
-    INSERT_BEST_GAME=$($PSQL "INSERT INTO games(user_id, best_game) VALUES($USER_ID, $TOTAL_GUESS);")
+    INSERT_BEST_GAME=$($PSQL "INSERT INTO games(user_id, best_game) VALUES($USER_ID, $GUESS_COUNT);")
   else
-    if [[ $TOTAL_GUESS -lt $BEST_GAME ]]; then
-      INSERT_BEST_GAME=$($PSQL "UPDATE games SET best_game = $TOTAL_GUESS WHERE user_id = $USER_ID;")
+    if [[ $GUESS_COUNT -lt $BEST_GAME ]]; then
+      UPDATE_BEST_GAME=$($PSQL "UPDATE games SET best_game = $GUESS_COUNT WHERE user_id = $USER_ID;") #
     fi
   fi
 
-  GAMES_PLAYED=$($PSQL "SELECT games_played FROM users WHERE user_id=$USER_ID;")
+  GAMES_PLAYED=$($PSQL "SELECT games_played FROM users WHERE user_id = $USER_ID;")
   if [[ -z $GAMES_PLAYED ]]; then
-    INSERT_GAMES_PLAYED=$($PSQL "INSERT INTO users(games_played) VALUES($TOTAL_GAMES)")
+    INSERT_GAMES_PLAYED=$($PSQL "INSERT INTO users(games_played) VALUES($GAME_COUNT)")
   else
-    INSERT_GAMES_PLAYED=$($PSQL "UPDATE users SET games_played = $TOTAL_GAMES + 1 WHERE user_id=$USER_ID;")
+    UPDATE_GAMES_PLAYED=$($PSQL "UPDATE users SET games_played = $GAME_COUNT + 1 WHERE user_id = $USER_ID;") # $GAMES_PLAYED
   fi
 }
 
