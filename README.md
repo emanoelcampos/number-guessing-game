@@ -1,5 +1,7 @@
 # Number Guessing Game
 
+*Learning Documentation*
+
 This project is a result of my learning journey through the [Relational Database certification course](https://www.freecodecamp.org/learn/relational-database/) offered by freeCodeCamp. The project, named "Number Guessing Game", is a terminal-based game where the user guesses a secret number. The game is implemented using Bash scripting and PostgreSQL for data management. The user's game data is stored and retrieved using PostgreSQL, and the game logic is implemented in Bash. The project is version controlled using Git.
 
 ## Database Diagram
